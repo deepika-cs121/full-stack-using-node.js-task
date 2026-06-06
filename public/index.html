@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Manager</title>
+</head>
+
+<body>
+
+    <h2>Add Student</h2>
+
+    <input id="name" placeholder="Name">
+    <input id="roll" placeholder="Roll Number">
+    <input id="branch" placeholder="Branch">
+    <input id="marks" placeholder="Marks">
+    <button onclick="addStudent()">Add</button>
+
+<h2>Students</h2>
+    <ul id="list"></ul>
+    <p id="message"></p>
+
+    <script>
+async function addStudent() {
+
+    const name = document.getElementById("name").value;
+    const roll = document.getElementById("roll").value;
+    const branch = document.getElementById("branch").value;
+    const marks = document.getElementById("marks").value;
+
+    const response = await fetch("/api/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: name,
+            rollNumber: roll,
+            branch: branch,
+            marks: marks
+        })
+    });
+
+    if (response.ok) {
+        document.getElementById("message").textContent = "Student added successfully!";
+        fetchStudents();
+    } else {
+        document.getElementById("message").textContent = "Error adding student";
+    }
+}
+
+async function fetchStudents() {
+    const response = await fetch("/api/students");
+    const students = await response.json();
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+    students.forEach(student => {
+        const li = document.createElement("li");
+        li.textContent = student.name + " - " + student.rollNumber + " - " + student.branch;
+        list.appendChild(li);
+    });
+}
+
+fetchStudents();
+</script>
+</body>
+</html>
